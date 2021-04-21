@@ -18,7 +18,7 @@
 agent {
     
   docker {
-   image 'node:6-alpine'
+   image 'node:12-alpine'
    args '-p 3000:3000'
   }
 >>>>>>> ea41a17eff8e47e5635782f51455fb5ef803685e
