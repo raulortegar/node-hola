@@ -1,13 +1,13 @@
-# use a node base image
-FROM node:7-onbuild
+FROM node:lts-alpine3.10
 
-# set maintainer
-LABEL maintainer "raulortegarcia@gmail.com"
+RUN apk add --no-cache git;
 
-# set a health check
-HEALTHCHECK --interval=5s \
-            --timeout=5s \
-            CMD curl -f http://127.0.0.1:3000 || exit 1
+RUN git clone https://github.com/raulortegar/node-hola/
 
-# tell docker what port to expose
+WORKDIR /node-hola
+
+RUN npm install;
+
 EXPOSE 3000
+
+CMD ["node", "index.js"];
