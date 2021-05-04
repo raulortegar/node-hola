@@ -1,29 +1,29 @@
-pipeline {
-    agent {
-      docker {
-        image 'node:lts-alpine3.10' 
-        args '-p 3000:3000 -u root:root'
-      }
-    }
+    agent any;
     stages {
-      stage('Clone') {
-        steps {
-          sh 'rm -r node-hola-deploy'
-          sh 'apk add --no-cache git'
-          sh 'git clone https://github.com/raulortegar/node-hola'
+      stage('Test') {
+        agent {
+          docker {
+            image 'node:lts-alpine3.10' 
+            args '-p 3000:3000 -u root:root'
+          }
         }
-      }
-      stage('NPM install') { 
         steps {
-          dir("node-hola-deploy") {
+          sh 'rm -rf node-hola'
+          sh 'apk add --no-cache git'
+          sh 'git clone https://github.com/raulortegar/node-hola/'
+          dir("node-hola") {
               sh "npm install"
+          }
+          dir("node-hola") {
+            sh "npm run test"
           }
         }
       }
-      stage('Check tests') {
+      stage('Deploy') { 
         steps {
-          dir("node-hola-deploy") {
-            sh "npm run test"
+          dir("node-hola") {
+            sh 'docker build -t nodejs-production .'
+            sh 'docker run -d -p 3100:3000 --name nodejs-production nodejs-production'
           }
         }
       }
